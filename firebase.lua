@@ -1,40 +1,33 @@
--- File: RealTime.lua
+-- File: firebase.lua
 
-local jsonUrl = "https://nitro-rush-race-club-th-default-rtdb.asia-southeast1.firebasedatabase.app/players.json"
-local data = nil
-local lastRequest = 0
-local refreshInterval = 5 -- seconds
+-- Dummy example script for HUD without Firebase interaction
+
+local data = {
+    player1 = { name = "Takumi", car = "AE86 Trueno" },
+    player2 = { name = "Keisuke", car = "FD3S RX-7" },
+    player3 = { name = "Ryosuke", car = "FC3S RX-7" }
+}
 
 function script.update(dt)
-    lastRequest = lastRequest + dt
-    if lastRequest >= refreshInterval then
-        lastRequest = 0
-
-        httpGet(jsonUrl, function(success, response)
-            if success then
-                data = ac.deserializeJson(response)
-                if data then
-                    ac.log("[FIREBASE] Player Data Loaded")
-                else
-                    ac.log("[FIREBASE] Failed to parse JSON")
-                end
-            else
-                ac.log("[FIREBASE] HTTP request failed")
-            end
-        end)
-    end
+    -- No remote call, static data only
 end
 
 function script.drawUI()
-    if not data then
-        ac.drawText("[Loading player data from Firebase...]", 30, 30)
-        return
-    end
+    local w, h = ac.getUI().width, ac.getUI().height
+    local boxW, boxH = 400, 300
+    local x = (w - boxW) / 2
+    local y = (h - boxH) / 2
 
-    local y = 60
+    ac.setColor(0, 0, 0, 180)
+    ac.drawRect(x, y, boxW, boxH)
+
+    ac.setColor(255, 255, 255, 255)
+    ac.drawText("Sample Player Data", x + 20, y + 20)
+
+    local offsetY = y + 60
     for playerID, playerInfo in pairs(data) do
         local line = string.format("%s: %s (%s)", playerID, playerInfo.name or "?", playerInfo.car or "?")
-        ac.drawText(line, 30, y)
-        y = y + 20
+        ac.drawText(line, x + 20, offsetY)
+        offsetY = offsetY + 20
     end
 end
